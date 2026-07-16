@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.orderService.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.orderService.name }}
+
+spec:
+  replicas: {{ .Values.orderService.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.orderService.name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.orderService.name }}
+
+    spec:
+      containers:
+      - name: {{ .Values.orderService.name }}
+
+        image: "{{ .Values.orderService.image.repository }}:{{ .Values.orderService.image.tag }}"
+
+        imagePullPolicy: {{ .Values.orderService.image.pullPolicy }}
+
+        ports:
+        - containerPort: {{ .Values.orderService.containerPort }}
+
+        env:
+        - name: USER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.configMap.name }}
+              key: USER_SERVICE_URL
+
+        - name: PRODUCT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.configMap.name }}
+              key: PRODUCT_SERVICE_URL
+
+        - name: PAYMENT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.configMap.name }}
+              key: PAYMENT_SERVICE_URL
+
+        resources:
+          requests:
+            cpu: {{ .Values.orderService.resources.requests.cpu }}
+            memory: {{ .Values.orderService.resources.requests.memory }}
+
+          limits:
+            cpu: {{ .Values.orderService.resources.limits.cpu }}
+            memory: {{ .Values.orderService.resources.limits.memory }}
+
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.orderService.probes.liveness.path }}
+            port: {{ .Values.orderService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.orderService.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.orderService.probes.liveness.periodSeconds }}
+
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.orderService.probes.readiness.path }}
+            port: {{ .Values.orderService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.orderService.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.orderService.probes.readiness.periodSeconds }}
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ .Values.orderService.name }}
+  namespace: {{ .Values.namespace }}
+
+spec:
+  selector:
+    app: {{ .Values.orderService.name }}
+
+  ports:
+  - protocol: TCP
+    port: {{ .Values.orderService.service.port }}
+    targetPort: {{ .Values.orderService.service.targetPort }}
+
+  type: {{ .Values.orderService.service.type }}

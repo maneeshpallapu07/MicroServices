@@ -1,0 +1,458 @@
+---
+# Source: ecommerce-chart/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ecommerce
+---
+# Source: ecommerce-chart/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: microservice-config
+  namespace: ecommerce
+
+data:
+  USER_SERVICE_URL: "http://user-service:5001"
+  PRODUCT_SERVICE_URL: "http://product-service:5002"
+  PAYMENT_SERVICE_URL: "http://payment-service:5004"
+  ORDER_SERVICE_URL: "http://order-service:5003"
+---
+# Source: ecommerce-chart/templates/frontend.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: frontend
+  namespace: ecommerce
+
+spec:
+  selector:
+    app: frontend
+
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+
+  type: ClusterIP
+---
+# Source: ecommerce-chart/templates/order.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: order-service
+  namespace: ecommerce
+
+spec:
+  selector:
+    app: order-service
+
+  ports:
+  - protocol: TCP
+    port: 5003
+    targetPort: 5003
+
+  type: ClusterIP
+---
+# Source: ecommerce-chart/templates/payment.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: payment-service
+  namespace: ecommerce
+
+spec:
+  selector:
+    app: payment-service
+
+  ports:
+  - protocol: TCP
+    port: 5004
+    targetPort: 5004
+
+  type: ClusterIP
+---
+# Source: ecommerce-chart/templates/product.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: product-service
+  namespace: ecommerce
+
+spec:
+  selector:
+    app: product-service
+
+  ports:
+  - protocol: TCP
+    port: 5002
+    targetPort: 5002
+
+  type: ClusterIP
+---
+# Source: ecommerce-chart/templates/user.yaml
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: user-service
+  namespace: ecommerce
+
+spec:
+  selector:
+    app: user-service
+
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 5001
+
+  type: ClusterIP
+---
+# Source: ecommerce-chart/templates/frontend.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend
+  namespace: ecommerce
+  labels:
+    app: frontend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+      - name: frontend
+
+        image: "maneeshdock/frontend:v1"
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5000
+
+        env:
+        - name: ORDER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-config
+              key: ORDER_SERVICE_URL
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+          limits:
+            cpu: 250m
+            memory: 256Mi
+
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Source: ecommerce-chart/templates/order.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: order-service
+  namespace: ecommerce
+  labels:
+    app: order-service
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: order-service
+
+  template:
+    metadata:
+      labels:
+        app: order-service
+
+    spec:
+      containers:
+      - name: order-service
+
+        image: "maneeshdock/order-service:v1"
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5003
+
+        env:
+        - name: USER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-config
+              key: USER_SERVICE_URL
+
+        - name: PRODUCT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-config
+              key: PRODUCT_SERVICE_URL
+
+        - name: PAYMENT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: microservice-config
+              key: PAYMENT_SERVICE_URL
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+          limits:
+            cpu: 250m
+            memory: 256Mi
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5003
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5003
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Source: ecommerce-chart/templates/payment.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: payment-service
+  namespace: ecommerce
+  labels:
+    app: payment-service
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: payment-service
+
+  template:
+    metadata:
+      labels:
+        app: payment-service
+
+    spec:
+      containers:
+      - name: payment-service
+
+        image: "maneeshdock/payment-service:v1"
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5004
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+          limits:
+            cpu: 250m
+            memory: 256Mi
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5004
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Source: ecommerce-chart/templates/product.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: product-service
+  namespace: ecommerce
+  labels:
+    app: product-service
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: product-service
+
+  template:
+    metadata:
+      labels:
+        app: product-service
+
+    spec:
+      containers:
+      - name: product-service
+
+        image: "maneeshdock/product-service:v1"
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5002
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+          limits:
+            cpu: 250m
+            memory: 256Mi
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5002
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5002
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Source: ecommerce-chart/templates/user.yaml
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: user-service
+  namespace: ecommerce
+  labels:
+    app: user-service
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: user-service
+
+  template:
+    metadata:
+      labels:
+        app: user-service
+
+    spec:
+      containers:
+      - name: user-service
+
+        image: "maneeshdock/user-service:v1"
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5001
+
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+
+          limits:
+            cpu: 250m
+            memory: 256Mi
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+
+          initialDelaySeconds: 15
+          periodSeconds: 10
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+# Source: ecommerce-chart/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: ecommerce-ingress
+  namespace: ecommerce
+
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+
+        backend:
+          service:
+            name: frontend
+
+            port:
+              number: 5000

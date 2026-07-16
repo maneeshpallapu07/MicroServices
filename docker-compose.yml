@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+
+  user-service:
+    build: ./user_service
+    image: user-service:v1
+    container_name: user-service
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./user_service/users.json:/app/users.json
+    restart: unless-stopped
+
+  product-service:
+    build: ./product_service
+    image: product-service:v1
+    container_name: product-service
+    ports:
+      - "5002:5002"
+    volumes:
+      - ./product_service/products.json:/app/products.json
+    restart: unless-stopped
+
+  payment-service:
+    build: ./payment_service
+    image: payment-service:v1
+    container_name: payment-service
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./payment_service/payments.json:/app/payments.json
+    restart: unless-stopped
+
+  order-service:
+    build: ./order_service
+    image: order-service:v1
+    container_name: order-service
+    ports:
+      - "5003:5003"
+
+    environment:
+      USER_SERVICE_URL: http://user-service:5001
+      PRODUCT_SERVICE_URL: http://product-service:5002
+      PAYMENT_SERVICE_URL: http://payment-service:5004
+
+    volumes:
+      - ./order_service/orders.json:/app/orders.json
+
+    depends_on:
+      - user-service
+      - product-service
+      - payment-service
+
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: frontend:v1
+    container_name: frontend
+    ports:
+      - "5000:5000"
+
+    environment:
+      ORDER_SERVICE_URL: http://order-service:5003
+
+    depends_on:
+      - order-service
+
+    restart: unless-stopped

@@ -1,0 +1,30 @@
+[
+    {
+        "paymentId": 1,
+        "orderId": 1,
+        "amount": 60000,
+        "status": "SUCCESS",
+        "transactionId": 454141
+    },
+    {
+        "paymentId": 2,
+        "orderId": 1,
+        "amount": 120000,
+        "status": "SUCCESS",
+        "transactionId": 919657
+    },
+    {
+        "paymentId": 3,
+        "orderId": 2,
+        "amount": 120000,
+        "status": "SUCCESS",
+        "transactionId": 340253
+    },
+    {
+        "paymentId": 4,
+        "orderId": 3,
+        "amount": 120000,
+        "status": "SUCCESS",
+        "transactionId": 525795
+    }
+]

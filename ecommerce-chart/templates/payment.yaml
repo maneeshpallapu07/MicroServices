@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.paymentService.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.paymentService.name }}
+
+spec:
+  replicas: {{ .Values.paymentService.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.paymentService.name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.paymentService.name }}
+
+    spec:
+      containers:
+      - name: {{ .Values.paymentService.name }}
+
+        image: "{{ .Values.paymentService.image.repository }}:{{ .Values.global.imageTag }}"
+
+        imagePullPolicy: {{ .Values.paymentService.image.pullPolicy }}
+
+        ports:
+        - containerPort: {{ .Values.paymentService.containerPort }}
+
+        resources:
+          requests:
+            cpu: {{ .Values.paymentService.resources.requests.cpu }}
+            memory: {{ .Values.paymentService.resources.requests.memory }}
+
+          limits:
+            cpu: {{ .Values.paymentService.resources.limits.cpu }}
+            memory: {{ .Values.paymentService.resources.limits.memory }}
+
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.paymentService.probes.liveness.path }}
+            port: {{ .Values.paymentService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.paymentService.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.paymentService.probes.liveness.periodSeconds }}
+
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.paymentService.probes.readiness.path }}
+            port: {{ .Values.paymentService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.paymentService.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.paymentService.probes.readiness.periodSeconds }}
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ .Values.paymentService.name }}
+  namespace: {{ .Values.namespace }}
+
+spec:
+  selector:
+    app: {{ .Values.paymentService.name }}
+
+  ports:
+  - protocol: TCP
+    port: {{ .Values.paymentService.service.port }}
+    targetPort: {{ .Values.paymentService.service.targetPort }}
+
+  type: {{ .Values.paymentService.service.type }}

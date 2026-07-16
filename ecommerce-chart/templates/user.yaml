@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ .Values.userService.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.userService.name }}
+
+spec:
+  replicas: {{ .Values.userService.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.userService.name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.userService.name }}
+
+    spec:
+      containers:
+      - name: {{ .Values.userService.name }}
+
+        image: "{{ .Values.userService.image.repository }}:{{ .Values.global.imageTag }}"
+
+        imagePullPolicy: {{ .Values.userService.image.pullPolicy }}
+
+        ports:
+        - containerPort: {{ .Values.userService.containerPort }}
+
+        resources:
+          requests:
+            cpu: {{ .Values.userService.resources.requests.cpu }}
+            memory: {{ .Values.userService.resources.requests.memory }}
+
+          limits:
+            cpu: {{ .Values.userService.resources.limits.cpu }}
+            memory: {{ .Values.userService.resources.limits.memory }}
+
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.userService.probes.liveness.path }}
+            port: {{ .Values.userService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.userService.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.userService.probes.liveness.periodSeconds }}
+
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.userService.probes.readiness.path }}
+            port: {{ .Values.userService.containerPort }}
+
+          initialDelaySeconds: {{ .Values.userService.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.userService.probes.readiness.periodSeconds }}
+
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{ .Values.userService.name }}
+  namespace: {{ .Values.namespace }}
+
+spec:
+  selector:
+    app: {{ .Values.userService.name }}
+
+  ports:
+  - protocol: TCP
+    port: {{ .Values.userService.service.port }}
+    targetPort: {{ .Values.userService.service.targetPort }}
+
+  type: {{ .Values.userService.service.type }}

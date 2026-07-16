@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Microservices Store</title>
+
+</head>
+
+<body>
+
+<h1>E-Commerce Store</h1>
+
+<form action="/place-order" method="POST">
+
+User ID
+
+<input type="number" name="userId" required>
+
+<br><br>
+
+Product ID
+
+<input type="number" name="productId" required>
+
+<br><br>
+
+Quantity
+
+<input type="number" name="quantity" required>
+
+<br><br>
+
+<button type="submit">
+
+Place Order
+
+</button>
+
+</form>
+
+{% if result %}
+
+<hr>
+
+<h2>Response</h2>
+
+<pre>
+
+{{ result }}
+
+</pre>
+
+{% endif %}
+
+</body>
+
+</html>
