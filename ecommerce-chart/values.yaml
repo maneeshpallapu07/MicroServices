@@ -14,7 +14,7 @@ configMap:
 frontend:
   name: frontend
 
-  replicaCount: 2
+  replicaCount: 4
 
   image:
     repository: maneeshdock/frontend
