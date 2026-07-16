@@ -2,56 +2,180 @@
 <html>
 
 <head>
+    <title>🚀 Ecommerce Microservices Platform</title>
 
-    <title>Microservices Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+        }
+
+        .services {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            color: #333;
+            width: 250px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #4f46e5;
+        }
+
+        .order-form {
+            background: white;
+            color: black;
+            width: 500px;
+            margin: 30px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .order-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #4f46e5;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #3730a3;
+        }
+
+        .response {
+            background: #111827;
+            color: #22c55e;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+    </style>
 
 </head>
 
 <body>
 
-<h1>E-Commerce Store</h1>
+    <div class="header">
+        <h1>🚀 Ecommerce Microservices Platform</h1>
+        <p>Jenkins • SonarQube • Docker • Helm • Kubernetes</p>
+    </div>
 
-<form action="/place-order" method="POST">
+    <div class="services">
 
-User ID
+        <div class="card">
+            <h3>👤 User Service</h3>
+            <p>User Registration & Authentication</p>
+        </div>
 
-<input type="number" name="userId" required>
+        <div class="card">
+            <h3>📦 Product Service</h3>
+            <p>Product Catalog Management</p>
+        </div>
 
-<br><br>
+        <div class="card">
+            <h3>🛒 Order Service</h3>
+            <p>Order Processing & Tracking</p>
+        </div>
 
-Product ID
+        <div class="card">
+            <h3>💳 Payment Service</h3>
+            <p>Payment Gateway Integration</p>
+        </div>
 
-<input type="number" name="productId" required>
+    </div>
 
-<br><br>
+    <div class="order-form">
 
-Quantity
+        <h2>Place New Order</h2>
 
-<input type="number" name="quantity" required>
+        /place-orderPOST">
 
-<br><br>
+            <label>User ID</label>
+            <input type="number" name="userId" required>
 
-<button type="submit">
+            <label>Product ID</label>
+            <input type="number" name="productId" required>
 
-Place Order
+            <label>Quantity</label>
+            <input type="number" name="quantity" required>
 
-</button>
+            <button type="submit">
+                🚀 Place Order
+            </button>
 
-</form>
+        </form>
 
-{% if result %}
+        {% if result %}
+        <div class="response">
+            <h3>Response</h3>
+            <pre>{{ result }}</pre>
+        </div>
+        {% endif %}
 
-<hr>
+    </div>
 
-<h2>Response</h2>
-
-<pre>
-
-{{ result }}
-
-</pre>
-
-{% endif %}
+    <div class="footer">
+        <h3>✅ Successfully Deployed Using Jenkins CI/CD Pipeline</h3>
+    </div>
 
 </body>
 

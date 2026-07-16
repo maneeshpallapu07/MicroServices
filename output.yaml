@@ -1,10 +1,4 @@
 ---
-# Source: ecommerce-chart/templates/namespace.yaml
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ecommerce
----
 # Source: ecommerce-chart/templates/configmap.yaml
 apiVersion: v1
 kind: ConfigMap
